@@ -1,6 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.animation as animation
+import pandas as pd
 import copy
 
 
@@ -178,16 +179,7 @@ class Simulation:
                         traitor += 1
                     elif not g[i][j].inner and not g[i][j].outer:
                         selfish += 1
-        if total != 0:
-            print('Ogólem: %d' % total)
-            print('Etnocentryzm: %d%%' % (round(100 * ethnocentric / total)))
-            print('Samarytanizm: %d%%' % (round(100 * samaritan / total)))
-            print('Zdrada: %d%%' % (round(100 * traitor / total)))
-            print('Egoizm: %d%%' % (round(100 * selfish / total)))
-        else:
-            print('Brak')
-
-        return [total, ethnocentric, samaritan, traitor, selfish]
+        return [ethnocentric, samaritan, traitor, selfish]
 
 
 ###################################################################################################
@@ -200,12 +192,35 @@ scat = ax.scatter([], [])
 
 
 def perform_simulation(iterations=1000):
-    for i in iterations:
+    simulation = Simulation(50)
+    agents_stat = [[], [], [], []]
+
+    for i in range(iterations):
         simulation.settlement()
         simulation.interaction()
         simulation.reproduction()
         simulation.death()
-        simulation.statistics()
+
+        result = simulation.statistics()
+        agents_stat[0].append(result[0])
+        agents_stat[1].append(result[1])
+        agents_stat[2].append(result[2])
+        agents_stat[3].append(result[3])
+
+    data = {'Etnocentryzm': pd.Series(agents_stat[0]),
+            'Samarytanizm': pd.Series(agents_stat[1]),
+            'Zdrada': pd.Series(agents_stat[2]),
+            'Egoizm': pd.Series(agents_stat[3])}
+
+    df = pd.DataFrame(data)
+
+    df.plot()
+    plt.title('Model Axelroda-Hammonda')
+    plt.ylabel('Liczba agentów')
+    plt.xlabel('Iteracje')
+    plt.tight_layout()
+    plt.savefig('axelrod-hammond.png')
+    plt.close()
 
 
 def init():
@@ -229,9 +244,11 @@ def animate(frame):
 
 def main():
 
-    ani = animation.FuncAnimation(fig, animate, init_func=init, frames=1000, blit=True)
-    ani.save('ethno.mp4', writer=animation.FFMpegFileWriter(), dpi=150)
-    plt.show()
+    # ani = animation.FuncAnimation(fig, animate, init_func=init, frames=1000, blit=True)
+    # ani.save('ethno.mp4', writer=animation.FFMpegFileWriter(), dpi=150)
+    # plt.show()
+
+    perform_simulation(1000)
 
 
 if __name__ == "__main__":
