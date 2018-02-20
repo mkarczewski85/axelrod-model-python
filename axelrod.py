@@ -29,7 +29,7 @@ class World:
         self.size = size
         self.grid = [[None for j in range(size)] for i in range(size)]
 
-    def visualization(self):  # metoda zwracająca strukturę
+    def visualization(self):  # struktura reprezentująca przestrzeń symulacyjną (dane potrzebne do wizualizacji)
         g = self.grid
         visual_data = {'x': [], 'y': [], 'c': [], 'edgecolors': []}
         for x in range(self.size):
@@ -66,7 +66,7 @@ class Simulation:
         self.death_probability = 0.10
 
     def __randomize_features(self):  # metoda generująca losowe wartości dla poszczególnych cech nowego automatu (agenta)
-        return np.random.choice(self.colors), np.random.randint(0, 2), np.random.randint(0, 2)
+        return np.random.choice(self.colors), np.random.choice([True, False]), np.random.choice([True, False])
 
     @staticmethod
     def __prisoners_dilemma(a, b):  # logika intekacji dla relacji wewnątrzgrupowej i międzygrupowej
@@ -142,9 +142,9 @@ class Simulation:
                                 if np.random.rand() < self.mutation_rate:
                                     g[options[k][0]][options[k][1]].color = np.random.choice(self.colors)
                                 if np.random.rand() < self.mutation_rate:
-                                    g[options[k][0]][options[k][1]].inner = np.random.randint(2)
+                                    g[options[k][0]][options[k][1]].inner = np.random.choice([True, False])
                                 if np.random.rand() < self.mutation_rate:
-                                    g[options[k][0]][options[k][1]].outer = np.random.randint(2)
+                                    g[options[k][0]][options[k][1]].outer = np.random.choice([True, False])
                                 break
         # przywracanie współczynnika potencjału reprodukcyjnego (PTR) do stanu początkowego
         for i in range(self.size):
@@ -244,9 +244,9 @@ def animate(frame):
 
 def main():
 
-    # ani = animation.FuncAnimation(fig, animate, init_func=init, frames=1000, blit=True)
-    # ani.save('ethno.mp4', writer=animation.FFMpegFileWriter(), dpi=150)
-    # plt.show()
+    ani = animation.FuncAnimation(fig, animate, init_func=init, frames=1000, blit=True)
+    ani.save('axelrod_anim.mp4', writer=animation.FFMpegFileWriter(), dpi=150)
+    plt.show()
 
     perform_simulation(1000)
 
